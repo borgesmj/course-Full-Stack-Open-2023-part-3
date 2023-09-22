@@ -61,39 +61,43 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 const generateId = () => {
-    const maxId = persons.length > 0
-      ? Math.max(...persons.map(n => n.id))
-      : 0
-    return maxId + 1
-  }
+  const maxId = 1000000;
+  let newId;
   
-  app.post('/api/persons', (request, response) => {
-    const body = request.body;
+  do {
+    newId = Math.floor(Math.random() * maxId);
+  } while (persons.some(existingPerson => existingPerson.id === newId));
+  
+  return newId;
+}
 
-    if (!body.name) {
-        return response.status(400).json({ 
-            error: 'name missing' 
-        });
-    } else if (!body.number) {
-        return response.status(400).json({
-            error: "number missing"
-        });
-    } else if (persons.some(existingPerson => existingPerson.name === body.name)) {
-        return response.status(400).json({
-             error: 'name must be unique' 
-        });
-    } else {
-        const person = {
-            id: generateId(),
-            number: body.number,
-            name: body.name
-        }
+app.post('/api/persons', (request, response) => {
+  const body = request.body;
 
-        persons = persons.concat(person)
-        response.json(person);
+  if (!body.name) {
+    return response.status(400).json({ 
+      error: 'name missing' 
+    });
+  } else if (!body.number) {
+    return response.status(400).json({
+      error: "number missing"
+    });
+  } else if (persons.some(existingPerson => existingPerson.name === body.name)) {
+    return response.status(400).json({
+      error: 'name must be unique' 
+    });
+  } else {
+    const person = {
+      id: generateId(),
+      number: body.number,
+      name: body.name
     }
 
+    persons = persons.concat(person)
+    response.json(person);
+  }
 });
+
 
 
 
