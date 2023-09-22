@@ -196,3 +196,62 @@ if (!body.name) {
     });
 ```
 
+## 3.7: backend de la agenda telefónica, paso 7
+
+Agregue el middleware morgan a su aplicación para iniciar sesión. Configúrelo para registrar mensajes en su consola según la pequeña configuración.
+
+La documentación de Morgan no es la mejor y es posible que deba dedicar algún tiempo a averiguar cómo configurarla correctamente. Sin embargo, la mayor parte de la documentación del mundo cae en la misma categoría, por lo que es bueno aprender a descifrar e interpretar documentación críptica en cualquier caso.
+
+Morgan se instala como todas las demás bibliotecas con el comando npm install. La puesta en funcionamiento de Morgan ocurre de la misma manera que la configuración de cualquier otro middleware mediante el comando app.use.
+
+
+Instalamos morgan
+
+```
+    npm install morgan
+```
+
+Importamos morgan
+```
+const morgan = require('morgan'); 
+```
+
+Configura morgan para registrar mensajes en el formato "dev"
+
+```
+app.use(morgan('dev')); 
+```
+
+Creamos una constante para establecer el formato que nos mostrará en consola los datos
+```
+const requestLogger = (request, response, next) => {
+  console.log('---');
+  console.log('Method:', request.method);
+  console.log('Path:  ', request.path);
+  console.log('Body:  ', request.body);
+  console.log('---');
+  next();
+};
+
+app.use(requestLogger);
+
+```
+
+## 3.8*: backend de la agenda telefónica, paso 8
+Configure morgan para que también muestre los datos enviados en las solicitudes HTTP POST:
+
+Define¿imos un formato personalizado para morgan que incluya los datos de solicitud en las solicitudes POST
+
+```
+morgan.token('postData', (req, res) => {
+  if (req.method === 'POST') {
+    return JSON.stringify(req.body);
+  } else {
+    return '-';
+  }
+});
+```
+
+Configuramos morgan para registrar mensajes en el formato personalizado
+
+app.use(morgan(':method :url :status :response-time ms - :res[content-length] - :postData'));
